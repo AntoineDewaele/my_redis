@@ -1,7 +1,6 @@
 package server
 
 import (
-	"bufio"
 	"net"
 	"fmt"
 	"os"
@@ -17,7 +16,7 @@ func New() *Server {
 
 func (server *Server) Start() {
 	var err error
-	server.listener, err = net.Listen("tcp", ":6379")
+	server.listener, err = net.Listen("tcp", "0.0.0.0:6379")
 	if err != nil {
 		fmt.Println("Failed to bind port 6379: ", err.Error())
 		os.Exit(1)
@@ -32,15 +31,6 @@ func (server *Server) AcceptConnection() net.Conn {
 	}
 
 	return conn
-}
-
-func (server *Server) Read(conn net.Conn) (string, error) {
-	cmd, err := bufio.NewReader(conn).ReadString('\n')
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-
-	return cmd, err
 }
 
 func (server *Server) Write(conn net.Conn, resp string) {
