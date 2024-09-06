@@ -3,9 +3,9 @@ package main
 import (
 	"my_redis/internal/server"
 	"my_redis/internal/reader"
+	"my_redis/internal/cmd_handler"
 	"net"
 	"fmt"
-	"strings"
 )
 
 func main() {
@@ -23,18 +23,15 @@ func handleConnection(s *server.Server, conn net.Conn) {
 	reader := reader.New(conn)
 
 	for {
-		cmd, err := reader.ReadCmd()
+		cmd, args, err := reader.ReadCmd()
 
 		if err != nil {
 			return
 		}
 
-		fmt.Println(cmd)
-			
-		if strings.Contains(cmd, "PING") {
-			s.Write(conn, "+PONG\r\n")
-		} else {
-			s.Write(conn, "-ERR unknown command"+cmd+"\r\n")
-		}
+		fmt.Println(cmd + " " + fmt.Sprint(args))
+		resp := cmd_handler.HandleCommand(cmd, args...)
+
+		s.Write(conn, resp)
 	}
 }

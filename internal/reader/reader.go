@@ -21,32 +21,41 @@ func New(conn net.Conn) *Reader {
 }
 
 // Read reads a line from the connection
-func (r *Reader) ReadCmd() (string, error) {
+func (r *Reader) ReadCmd() (string, []string, error) {
 
 	// Read the *<number of elements> line
 	line, err := r.readOneLine()
 
 	if strings.HasPrefix(line, "*") {
-		return r.parseCmd(line), err
+		cmd, args := r.parseCmd(line)
+		return cmd, args, err
 	}
 
 	fmt.Println("Received non RESP protocol command")
-	return "", err
+	var empty []string
+	return "", empty, err
 }
 
-func (r *Reader) parseCmd(line string) string {
+func (r *Reader) parseCmd(line string) (string, []string) {
 	nbElements := r.parseElementsNb(line)
-	cmd := ""
+	var cmd string
+	var args []string
 
 	for i:= 0; i < nbElements; i++ {
 		// skip the $<length> line
 		_,_ = r.readOneLine()
+
 		// read the actual element
 		line,_ := r.readOneLine()
-		cmd = cmd + " " + line
+
+		if i == 0 {
+			cmd = line
+		} else {
+			args = append(args, line)
+		}
 	}
 
-	return cmd
+	return cmd, args
 }
 
 func (r *Reader) readOneLine() (string, error) {
@@ -56,7 +65,9 @@ func (r *Reader) readOneLine() (string, error) {
 		fmt.Println("Failed to read from connection:", err)
 	}
 
-	return strings.TrimSpace(line), err
+	line = strings.TrimSpace(line)
+
+	return line, err
 }
 
 func (r *Reader) parseElementsNb(line string) int {
