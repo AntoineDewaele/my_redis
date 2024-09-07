@@ -37,6 +37,10 @@ func (s *Store) GetTTL(key string) int64 {
 	return s.data[key].ttl
 }
 
+func (s *Store) GetData() map[string]StoreData {
+	return s.data
+}
+
 func (s *Store) Set(key string, value string) {
 	s.data[key] = StoreData{data: value}
 }
