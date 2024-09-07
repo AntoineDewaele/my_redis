@@ -11,7 +11,7 @@ make run
 
 ## Test it
 
-This redis is RESP compilant so you can also use redis-cli :
+This redis is RESP compilant so you can use redis-cli :
 
 ```
 redis-cli
