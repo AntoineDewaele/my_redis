@@ -23,6 +23,6 @@ redis-cli
 
 ## Commands implemented
 
-- [PING]([url](https://redis.io/docs/latest/commands/ping/))
-- [SET]([url](https://redis.io/docs/latest/commands/set/))
-- [GET]([url](https://redis.io/docs/latest/commands/get/))
+- PING : https://redis.io/docs/latest/commands/ping/
+- SET : https://redis.io/docs/latest/commands/set/
+- GET : https://redis.io/docs/latest/commands/get/
