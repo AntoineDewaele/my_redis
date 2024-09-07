@@ -20,4 +20,7 @@ test:
 
 coverage:
 	$(GO) test -coverprofile=coverage.out ./...
+	make gen_coverage_report
+
+gen_coverage_report :
 	$(GO) tool cover -html=coverage.out -o coverage.html
