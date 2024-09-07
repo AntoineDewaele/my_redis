@@ -30,8 +30,17 @@ func handleConnection(s *server.Server, conn net.Conn) {
 		}
 
 		fmt.Println(cmd + " " + fmt.Sprint(args))
-		resp := cmd_handler.HandleCommand(cmd, args...)
+		resp, errResp := cmd_handler.HandleCommand(cmd, args...)
+		writeMessage := ""
 
-		s.Write(conn, resp)
+		if (resp != "") {
+			writeMessage = "+\""+resp+"\"\r\n"
+		} else if (errResp != "") {
+			writeMessage = "-"+errResp+"\r\n"
+		} else {
+			writeMessage = "$-1\r\n"
+		}
+
+		s.Write(conn, writeMessage)
 	}
 }

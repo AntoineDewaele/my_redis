@@ -3,15 +3,15 @@ package cmd_handler
 import (
 )
 
-func (_ Commands) Ping(args ...string) string {
+func (_ Commands) Ping(args ...string) (string, string){
 
 	if len(args) > 1 {
-		return "-wrong number of arguments for 'ping' command\r\n"
+		return "", "wrong number of arguments for 'ping' command"
 	}
 
 	if len(args) == 1 {
-		return "+\"" + args[0] + "\"\r\n"
+		return args[0], ""
 	}
 
-	return "+\"PONG\"\r\n"
+	return "PONG", ""
 }

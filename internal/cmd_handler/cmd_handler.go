@@ -8,7 +8,7 @@ import (
 
 type Commands struct {}
 
-func HandleCommand(cmd string, args ...string) string {
+func HandleCommand(cmd string, args ...string) (string, string) {
 	commands := Commands{}
 
 	cmd = toMethodName(cmd)
@@ -26,10 +26,10 @@ func HandleCommand(cmd string, args ...string) string {
 		result := method.Call(reflectArgs)
 		
 		// Assuming the method returns a single string value
-		return result[0].String()
+		return result[0].String(), result[1].String()
 	}
 
-	return "-unknown command"+cmd+"\r\n"
+	return "", "unknown command"+cmd
 }
 
 // Converts an uppercase command to CamelCase method name
@@ -51,7 +51,7 @@ func parseOptions(args []string, optionsAvailable map[string]map[string]interfac
 		arg := args[i]
 		option, ok := optionsAvailable[arg]
 		if !ok {
-			return nil, "-syntax error\r\n"
+			return nil, "syntax error"
 		}
 
 		argNb, _ := option["argNb"].(int)
@@ -77,7 +77,7 @@ func parseArgs(args []string, index *int, argNb int, types []string) ([]interfac
 	for j := 0; j < argNb; j++ {
 		(*index)++
 		if *index >= len(args) {
-			return nil, "-syntax error\r\n"
+			return nil, "syntax error"
 		}
 
 		argValue, err := convertArg(args[*index], types[j])
@@ -95,10 +95,10 @@ func convertArg(value string, expectedType string) (interface{}, string) {
 	case "int":
 		argValue, err := strconv.Atoi(value)
 		if err != nil {
-			return nil, "-value is not an integer or out of range\r\n"
+			return nil, "value is not an integer or out of range"
 		}
 		return argValue, ""
 	default:
-		return nil, "-unknown type\r\n"
+		return nil, "unknown type"
 	}
 }

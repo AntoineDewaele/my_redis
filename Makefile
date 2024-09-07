@@ -12,3 +12,12 @@ run: build
 
 clean:
 	rm -f $(BINARY_NAME)
+	rm -f coverage.out
+	rm -f coverage.html
+
+test:
+	$(GO) test -v ./...
+
+coverage:
+	$(GO) test -coverprofile=coverage.out ./...
+	$(GO) tool cover -html=coverage.out -o coverage.html
