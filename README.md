@@ -11,10 +11,6 @@ make run
 
 ## Test it
 
-```
-netcat 127.0.0.1 6379
-```
-
 This redis is RESP compilant so you can also use redis-cli :
 
 ```
