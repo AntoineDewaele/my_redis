@@ -3,6 +3,7 @@ package cmd_handler
 import (
 	"reflect"
 	"strings"
+	"strconv"
 )
 
 type Commands struct {}
@@ -41,4 +42,63 @@ func toMethodName(cmd string) string {
 			}
 	}
 	return strings.Join(parts, "")
+}
+
+// Parses the options of a command
+func parseOptions(args []string, optionsAvailable map[string]map[string]interface{}) (map[string][]interface{}, string) {
+	options := make(map[string][]interface{})
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
+		option, ok := optionsAvailable[arg]
+		if !ok {
+			return nil, "-syntax error\r\n"
+		}
+
+		argNb, _ := option["argNb"].(int)
+		if argNb == 0 {
+			options[arg] = []interface{}{}
+			continue
+		}
+
+		types, _ := option["types"].([]string)
+		optionArgs, err := parseArgs(args, &i, argNb, types)
+		if err != "" {
+			return nil, err
+		}
+		options[arg] = optionArgs
+	}
+
+	return options, ""
+}
+
+func parseArgs(args []string, index *int, argNb int, types []string) ([]interface{}, string) {
+	optionArgs := make([]interface{}, 0, argNb)
+
+	for j := 0; j < argNb; j++ {
+		(*index)++
+		if *index >= len(args) {
+			return nil, "-syntax error\r\n"
+		}
+
+		argValue, err := convertArg(args[*index], types[j])
+		if err != "" {
+			return nil, err
+		}
+		optionArgs = append(optionArgs, argValue)
+	}
+
+	return optionArgs, ""
+}
+
+func convertArg(value string, expectedType string) (interface{}, string) {
+	switch expectedType {
+	case "int":
+		argValue, err := strconv.Atoi(value)
+		if err != nil {
+			return nil, "-value is not an integer or out of range\r\n"
+		}
+		return argValue, ""
+	default:
+		return nil, "-unknown type\r\n"
+	}
 }
